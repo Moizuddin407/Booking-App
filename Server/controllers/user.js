@@ -1,85 +1,74 @@
-import Hotel from "../models/Hotel.js";
+import User from "../models/User.js";
 import mongoose from "mongoose";
+import { createError } from "../utils/createError.js"; // Import createError
 
-export const createHotel = async (req, res, next) => {
-  try {
-    if (!req.body.name || !req.body.city || !req.body.type) {
-      return next({ status: 400, message: "Missing required fields" });
-    }
-    const newHotel = new Hotel(req.body);
-    const savedHotel = await newHotel.save();
-    res.status(201).json(savedHotel);
-  } catch (e) {
-    next({ status: 500, message: "Error creating hotel", error: e.message });
-  }
-};
 
-export const getHotel = async (req, res, next) => {
+// GET SINGLE USER
+export const getUser = async (req, res, next) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return next({ status: 400, message: "Invalid ID format" });
+    return next(createError(400, "Invalid ID format"));
   }
 
   try {
-    const hotel = await Hotel.findById(id);
-    if (!hotel) {
-      return next({ status: 404, message: "Hotel not found" });
+    const user = await User.findById(id);
+    if (!user) {
+      return next(createError(404, "User not found"));
     }
-    res.status(200).json(hotel);
+    res.status(200).json(user);
   } catch (e) {
-    next({ status: 500, message: "Error fetching hotel", error: e.message });
+    next(createError(500, "Error fetching user"));
   }
 };
 
-export const getAllHotels = async (req, res, next) => {
+// GET ALL USERS
+export const getAllUsers = async (req, res, next) => {
   try {
-    const hotels = await Hotel.find();
-    if (!hotels || hotels.length === 0) {
-      return next({ status: 404, message: "No hotels found" });
+    const users = await User.find();
+    if (!users || users.length === 0) {
+      return next(createError(404, "No users found"));
     }
-    res.status(200).json(hotels);
+    res.status(200).json(users);
   } catch (e) {
-    next({ status: 500, message: "Error fetching hotels", error: e.message });
+    next(createError(500, "Error fetching users"));
   }
 };
 
-export const updateHotel = async (req, res, next) => {
+// UPDATE USER
+export const updateUser = async (req, res, next) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return next({ status: 400, message: "Invalid ID format" });
+    return next(createError(400, "Invalid ID format"));
   }
 
   try {
-    const updatedHotel = await Hotel.findByIdAndUpdate(
-      id,
-      { $set: req.body },
-      { new: true }
-    );
-    if (!updatedHotel) {
-      return next({ status: 404, message: "Hotel not found" });
+    const updatedUser = await User.findByIdAndUpdate(id, { $set: req.body }, { new: true });
+    if (!updatedUser) {
+      return next(createError(404, "User not found"));
     }
-    res.status(200).json(updatedHotel);
+    res.status(200).json(updatedUser);
   } catch (e) {
-    next({ status: 500, message: "Error updating hotel", error: e.message });
+    next(createError(500, "Error updating user"));
   }
 };
 
-export const deleteHotel = async (req, res, next) => {
+// DELETE USER
+export const deleteUser = async (req, res, next) => {
   const { id } = req.params;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
-    return next({ status: 400, message: "Invalid ID format" });
+    return next(createError(400, "Invalid ID format"));
   }
 
   try {
-    const deletedHotel = await Hotel.findByIdAndDelete(id);
-    if (!deletedHotel) {
-      return next({ status: 404, message: "Hotel not found" });
+    const deletedUser = await User.findByIdAndDelete(id);
+    if (!deletedUser) {
+      return next(createError(404, "User not found"));
     }
-    res.status(200).json({ message: "Hotel deleted successfully" });
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (e) {
-    next({ status: 500, message: "Error deleting hotel", error: e.message });
+    next(createError(500, "Error deleting user"));
   }
 };
