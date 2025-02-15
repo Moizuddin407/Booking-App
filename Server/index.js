@@ -5,6 +5,7 @@ import authRoute from "./routes/auth.js";
 import hotelRoute from "./routes/hotels.js";
 import roomRoute from "./routes/rooms.js";
 import userRoute from "./routes/users.js";
+import cookieParser from "cookie-parser";
 
 const app = express();
 dotenv.config();
@@ -25,7 +26,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-
+app.use(cookieParser());
 // Apply routes
 app.use("/auth", authRoute);
 app.use("/hotel", hotelRoute);
