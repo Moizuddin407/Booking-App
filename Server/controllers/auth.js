@@ -5,38 +5,49 @@ import { createError } from "../utils/createError.js";
 
 export const register = async (req, res, next) => {
   try {
-    if (!req.body.username || !req.body.email || !req.body.password) {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
       return next(createError(400, "Missing required fields"));
     }
 
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(req.body.password, salt);
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return next(createError(400, "Email already registered"));
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash(password, salt);
 
     const newUser = new User({
-      username: req.body.username,
-      email: req.body.email,
+      username,
+      email,
       password: hash,
+      isAdmin: req.body.isAdmin || false,
     });
 
     await newUser.save();
-    res.status(201).send("User created successfully");
+    res.status(201).json({ message: "User created successfully" });
+
   } catch (e) {
-    next(createError(500, "Error creating user"));
+    next(createError(500, `Error creating user: ${e.message}`));
   }
 };
 
 export const login = async (req, res, next) => {
   try {
-    if (!req.body.username || !req.body.password) {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
       return next(createError(400, "Username and password are required"));
     }
 
-    const user = await User.findOne({ username: req.body.username });
+    const user = await User.findOne({ username });
     if (!user) {
       return next(createError(404, "User not found!"));
     }
 
-    const isPasswordCorrect = await bcrypt.compare(req.body.password, user.password);
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect) {
       return next(createError(400, "Wrong password or username!"));
     }
@@ -47,16 +58,15 @@ export const login = async (req, res, next) => {
       { expiresIn: "1h" }
     );
 
-    // Remove password and isAdmin from info that
-    // will be sent to front-end.
-    const { password, isAdmin, ...otherDetails } = user._doc;
+    const { password: _, isAdmin, ...otherDetails } = user._doc;
 
-    // httpOnly prevents javascript from accessing token
-    // to protect from xss attacks.
     res.cookie("access_token", token, {
       httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
     }).status(200).json({ ...otherDetails });
+
   } catch (err) {
-    next(createError(500, "Error logging in"));
+    next(createError(500, `Error logging in: ${err.message}`));
   }
 };
