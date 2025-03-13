@@ -58,6 +58,7 @@ export const login = async (req, res, next) => {
       { expiresIn: "1h" }
     );
 
+    // DESTRUCTED THE OBJECT TO IGNORE THE PASSWORD AND ISADMIN CHECK. SENDS REST OF THE DATA.
     const { password: _, isAdmin, ...otherDetails } = user._doc;
 
     res.cookie("access_token", token, {

@@ -33,7 +33,7 @@ app.use("/hotel", hotelRoute);
 app.use("/room", roomRoute);
 app.use("/user", userRoute);
 
-// Middleware
+// Middleware FOR ERRORS
 app.use((err, req, res, next) => {
   console.log("[ERROR MIDDLEWARE] Handling error:", err.message);
   const errorStatus = err.status || 500;

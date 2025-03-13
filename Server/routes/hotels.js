@@ -1,13 +1,6 @@
 import express from "express";
-import {
-  createHotel,
-  getHotel,
-  getAllHotels,
-  updateHotel,
-  deleteHotel,
-} from "../controllers/hotel.js";
-import mongoose from "mongoose";
-
+import { createHotel,getHotel,getAllHotels,updateHotel,deleteHotel,} from "../controllers/hotel.js";
+import {verifyAdmin} from "../utils/verifyToken.js"
 const router = express.Router();
 
 router.use((req, res, next) => {
@@ -15,10 +8,15 @@ router.use((req, res, next) => {
   next();
 });
 
-router.post("/add", createHotel);
+// GET
 router.get("/:id", getHotel);
+// GET ALL
 router.get("/", getAllHotels);
-router.put("/:id", updateHotel);
-router.delete("/:id", deleteHotel);
+// CREATE
+router.post("/add", verifyAdmin, createHotel);
+// UPDATE
+router.put("/:id", verifyAdmin, updateHotel);
+// DELETE
+router.delete("/:id",verifyAdmin, deleteHotel);
 
 export default router;
