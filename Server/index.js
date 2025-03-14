@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
+import cors from "cors";  // Import CORS
 import authRoute from "./routes/auth.js";
 import hotelRoute from "./routes/hotels.js";
 import roomRoute from "./routes/rooms.js";
@@ -19,6 +20,9 @@ const connect = async () => {
   }
 };
 
+// Enable CORS globally for all routes
+app.use(cors());  // This will allow all domains. If you need to restrict it, you can provide options
+
 // Global Middleware
 app.use((req, res, next) => {
   console.log(`[MIDDLEWARE] Request received: ${req.method} ${req.url}`);
@@ -27,6 +31,7 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 app.use(cookieParser());
+
 // Apply routes
 app.use("/auth", authRoute);
 app.use("/hotel", hotelRoute);
