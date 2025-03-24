@@ -16,12 +16,19 @@ const List = () => {
   const [options, setOptions] = useState(location.state.options);
   const [min, setMin] = useState(undefined);
   const [max, setMax] = useState(undefined);
-  const { data, loading, error, reFetch } = useFetch(
+
+  // State to hold the dynamic query URL
+  const [url, setUrl] = useState(
     `/hotel?city=${destination}&min=${min || 0}&max=${max || 99999}`
   );
 
+  // Fetch data using the url state
+  const { data, loading, error } = useFetch(url);
+
+  // Handle the click event when the user searches
   const handleClick = () => {
-    reFetch();
+    const newUrl = `/hotel?city=${destination}&min=${min || 0}&max=${max || 99999}`;
+    setUrl(newUrl); // Update the URL, which will trigger a re-fetch
   };
 
   return (
