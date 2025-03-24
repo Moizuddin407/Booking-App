@@ -1,6 +1,12 @@
 import "./featuredProperties.css";
+import useFetch from "../../hooks/usefetch";  // Make sure the case matches the actual file name
 
 const FeaturedProperties = () => {
+  
+  const {data, loading, error} = useFetch(
+    "/hotel/getAllHotels"
+    );
+  
   return (
     <div className="fp">
       <div className="fpItem">
