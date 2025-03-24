@@ -19,7 +19,7 @@ const useFetch = (url) =>{
         }
         fetchData();
     },[url]);
-    
+    // You can add url in [] above to update
     const reFetchData = async ()=>{
         setLoading(true);
         try{
