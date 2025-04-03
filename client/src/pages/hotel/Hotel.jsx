@@ -15,7 +15,7 @@ import useFetch from "../../hooks/usefetch.js";
 import { useLocation, Navigate } from "react-router-dom"; // <-- Import Navigate here
 import { SearchContext } from "../../context/SearchContext.js";
 import { AuthContext } from "../../context/AuthContext.js";
-import Reserve from "../../components/reserve/Reserve.jsx";
+import Reserve from "../../components/reserve/Reserve.jsx";  // Ensure this component exists
 
 const Hotel = () => {
   const location = useLocation();
@@ -58,9 +58,9 @@ const Hotel = () => {
 
   const handleClick = () => {
     if (user) {
-      setOpenModal(true);
+      setOpenModal(true); // Open the booking modal if the user is logged in
     } else {
-      return <Navigate to="/login" />;
+      return <Navigate to="/login" />; // Redirect to login if not logged in
     }
   };
 
@@ -95,7 +95,7 @@ const Hotel = () => {
             </div>
           )}
           <div className="hotelWrapper">
-            <button className="bookNow">Reserve or Book Now!</button>
+            <button className="bookNow" onClick={handleClick}>Reserve or Book Now!</button>
             <h1 className="hotelTitle">{data.name}</h1>
             <div className="hotelAddress">
               <FontAwesomeIcon icon={faLocationDot} />

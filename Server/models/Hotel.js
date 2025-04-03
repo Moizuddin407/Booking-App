@@ -13,32 +13,41 @@ const HotelSchema = new Schema({
   city: {
     type: String,
     required: true,
-  },address: {
+  },
+  address: {
     type: String,
     required: true,
-  },distance: {
+  },
+  distance: {
     type: String,
     required: true,
-  },title: {
+  },
+  title: {
     type: String,
     required: true,
-  },photos: {
+  },
+  photos: {
     type: [String],
     required: true,
-  },desc: {
+  },
+  desc: {
     type: String,
     required: true,
-  },rating: {
+  },
+  rating: {
     type: Number,
     min:0,
     max:5
-  },rooms: {
+  },
+  rooms: {
     type: [String],
     required: true,
-  },cheapestPrice: {
+  },
+  cheapestPrice: {
     type: Number,
     required: true,
-  },featured: {
+  },
+  featured: {
     type: Boolean,
     required: false,
   }

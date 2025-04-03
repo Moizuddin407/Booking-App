@@ -1,6 +1,7 @@
 import Hotel from "../models/Hotel.js";
 import mongoose from "mongoose";
 import { createError } from "../utils/createError.js"; // Import createError
+import Room from "../models/Room.js"
 
 export const createHotel = async (req, res, next) => {
   try {
@@ -127,3 +128,33 @@ export const countByType = async (req, res, next) => {
     next(err);
   }
 };
+
+export const getHotelRooms = async (req, res, next) => {
+  try {
+    const hotel = await Hotel.findById(req.params.id);
+    const list = await Promise.all(
+      hotel.rooms.map((room) => {
+        return Room.findById(room);
+      })
+    );
+    res.status(200).json(list);
+  } catch (err) {
+    next(err);
+  }
+};
+
+
+// export const getHotelRooms = async (req, res, next) => {
+//   try {
+//     // Find hotel by ID
+//     const hotel = await Hotel.findById(req.params.id).populate('rooms'); // Use populate to fetch rooms
+    
+//     if (!hotel || !hotel.rooms || hotel.rooms.length === 0) {
+//       return res.status(404).json({ success: false, message: 'No rooms found for this hotel' });
+//     }
+
+//     res.status(200).json(hotel.rooms); // Return populated rooms
+//   } catch (e) {
+//     next(e);
+//   }
+// };

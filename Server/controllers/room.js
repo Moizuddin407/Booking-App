@@ -100,3 +100,5 @@ export const deleteRoom = async (req, res, next) => {
     next(createError(500, "Error deleting Room"));
   }
 };
+
+// UPDATE ROOM AVAILABILITY
