@@ -3,7 +3,7 @@ import './reserve.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-solid-svg-icons'; // Don't forget to import the icon
 import useFetch from "../../hooks/usefetch";
-import { useContext, useState } from 'react';
+import { useNavigate, useContext, useState } from 'react';
 import { SearchContext } from "../../context/SearchContext.js";
 import axios from 'axios';
 
@@ -28,6 +28,7 @@ const Reserve = ({ setOpen, hotelId }) => {
 
   const allDates = getDatesInRange(dates[0].startDate, dates[0].endDate);
 
+  // IMP
   // Check if the room is available by comparing its unavailable dates with selected dates
   const isAvailable = (roomNumber) => {
     const unavailableDatesTimestamps = roomNumber.unavailableDates.map(item => {
@@ -59,7 +60,7 @@ const Reserve = ({ setOpen, hotelId }) => {
       }
     });
   };
-
+  const navigate = useNavigate();
   // Handle reservation on click
   const handleClick = async () => {
     try {
@@ -71,7 +72,8 @@ const Reserve = ({ setOpen, hotelId }) => {
           );
         })
       );
-      alert('Rooms updated successfully');
+      setOpen(false);
+      navigate("/");
     } catch (err) {
       console.log("Error updating availability:", err);
     }
