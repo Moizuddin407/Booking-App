@@ -102,3 +102,42 @@ export const deleteRoom = async (req, res, next) => {
 };
 
 // UPDATE ROOM AVAILABILITY
+// export const updateRoomAvailability = async (req, res, next) => {
+//   console.log("JUST UPDATED DATES BRO! ");
+//   try {
+//     const updatedRoom = await Room.updateOne(
+//       { "roomNumbers._id": req.params.id },
+//       {
+//         $push: {
+//           // Updating nested properties in MongoDB.
+//           "roomNumbers.$.unavailableDates": req.body.dates,
+//         },
+//       }
+//     );
+    
+//     // Ensure updatedRoom is returned after update
+//     res.status(200).json(updatedRoom); 
+//   } catch (err) {
+//     next(err);
+//   }
+// };
+
+export const updateRoomAvailability = async (req, res, next) => {
+  console.log("JUST UPDATED DATES BRO! ", req.body.dates); // Log incoming dates to check
+  try {
+    const updatedRoom = await Room.updateOne(
+      { "roomNumbers._id": req.params.id },
+      {
+        $push: {
+          // Updating nested properties in MongoDB.
+          "roomNumbers.$.unavailableDates": req.body.dates,
+        },
+      }
+    );
+
+    console.log("Updated Room: ", updatedRoom); // Log the update status to verify
+    res.status(200).json(updatedRoom);
+  } catch (err) {
+    next(err);
+  }
+};

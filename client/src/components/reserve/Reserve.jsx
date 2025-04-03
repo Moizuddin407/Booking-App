@@ -5,6 +5,7 @@ import { faCircleXmark } from '@fortawesome/free-solid-svg-icons'; // Don't forg
 import useFetch from "../../hooks/usefetch";
 import { useContext, useState } from 'react';
 import { SearchContext } from "../../context/SearchContext.js";
+import axios from 'axios';
 
 const Reserve = ({ setOpen, hotelId }) => {
   const { data, loading, error } = useFetch(`http://localhost:8081/hotel/rooms/${hotelId}`);
@@ -19,22 +20,34 @@ const Reserve = ({ setOpen, hotelId }) => {
     const data = new Date(start.getTime());
     let list = [];
     while (data <= end) {
-      list.push(new Date(data).getTime());
+      list.push(new Date(data).getTime()); // Push the timestamp for each day in the range
       data.setDate(data.getDate() + 1);
     }
     return list;
   };
 
-  
-  const allDates = (getDatesInRange(dates[0].startDate, dates[0].endDate))
+  const allDates = getDatesInRange(dates[0].startDate, dates[0].endDate);
+
+  // Check if the room is available by comparing its unavailable dates with selected dates
   const isAvailable = (roomNumber) => {
-    const isFound = roomNumber.unavailableDates.some((date) =>
-      allDates.includes(new Date(date).getTime())
-    );
-    return !isFound;
+    const unavailableDatesTimestamps = roomNumber.unavailableDates.map(item => {
+      // If the item is an array, take the first element (the date string)
+      const dateString = Array.isArray(item) ? item[0] : item;
+      const newDate = new Date(dateString);  // Try converting the string to Date object
+      if (isNaN(newDate.getTime())) {
+        return null;  // Return null for invalid dates
+      }
+      // Normalize to midnight to ignore time zone differences
+      newDate.setHours(0, 0, 0, 0); // Set time to midnight
+      return newDate.getTime();
+    }).filter(date => date !== null);  // Filter out invalid dates
+
+    // Compare selected dates with unavailable dates
+    const isFound = allDates.some(date => unavailableDatesTimestamps.includes(date));
+    return !isFound; // If a date is found in the unavailable list, return false
   };
 
-
+  // Handle room selection
   const handleSelect = (e) => {
     const selected = e.target.checked;
     const roomId = e.target.value;
@@ -47,15 +60,20 @@ const Reserve = ({ setOpen, hotelId }) => {
     });
   };
 
+  // Handle reservation on click
   const handleClick = async () => {
     try {
       await Promise.all(
-        selectedRooms.map((roomId) => {
-          // const res = axios.push("")
+        selectedRooms.map(async (roomId) => {
+          const res = await axios.put(
+            `http://localhost:8081/room/availability/${roomId}`,
+            { dates: allDates }
+          );
         })
       );
+      alert('Rooms updated successfully');
     } catch (err) {
-      
+      console.log("Error updating availability:", err);
     }
   };
 
@@ -88,7 +106,7 @@ const Reserve = ({ setOpen, hotelId }) => {
                       type='checkbox' 
                       value={roomNumber._id} 
                       onChange={handleSelect}
-                      disabled={!isAvailable(roomNumber)}
+                      disabled={!isAvailable(roomNumber)} // Disable if the room is unavailable
                     />
                   </div>
                 );
